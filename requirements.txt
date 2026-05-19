@@ -1,0 +1,13 @@
+streamlit==1.41.0
+numpy==1.26.4
+pandas==2.2.3
+scipy==1.13.1
+mne==1.8.0
+pyedflib==0.1.38
+lightgbm==4.5.0
+scikit-learn==1.5.2
+torch==2.5.1
+pywavelets==1.6.0
+plotly==5.24.1
+shap==0.46.0
+reportlab==4.2.5

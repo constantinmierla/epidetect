@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Uploaded files (nu sunt comise)
+uploads/
+tmp/
+*.tmp
+
+# Data files (prea mari pentru git)
+processed/
+raw_eeg_data/
+*.h5
+*.edf
+*.seizures
+
+# Outputs
+reports/
+reports_inference/
+
+# Jupyter
+.ipynb_checkpoints/
