@@ -1,7 +1,3 @@
-"""
-Arhitectura EEGNet v2 - identica cu cea din antrenare (NB2b).
-Trebuie definita in fisier separat pentru ca pickle sa poata incarca modelul.
-"""
 import torch
 import torch.nn as nn
 
@@ -34,7 +30,6 @@ class EEGNet(nn.Module):
             nn.ELU(),
             nn.AvgPool2d((1, 8)),
             nn.Dropout(dropout))
-        # Dimensiune calculata automat
         with torch.no_grad():
             n_out = self.b3(self.b2(self.b1(
                 torch.zeros(1, 1, n_channels, n_samples)))).numel()
@@ -52,7 +47,6 @@ class EEGNet(nn.Module):
 
 
 def get_device():
-    """Detecteaza automat device-ul disponibil: CUDA > MPS > CPU."""
     if torch.cuda.is_available():
         return 'cuda'
     elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():

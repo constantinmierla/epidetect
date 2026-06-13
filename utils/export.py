@@ -57,7 +57,6 @@ def generate_pdf_report(result, filename, ground_truth=None,
 
     styles = getSampleStyleSheet()
 
-    # Stiluri custom
     title_style = ParagraphStyle(
         'CustomTitle', parent=styles['Title'],
         fontSize=20, textColor=COLOR_ACCENT,
@@ -308,7 +307,7 @@ def generate_pdf_report(result, filename, ground_truth=None,
             em = event_metrics
             if em['tp'] == em['n_gt_seizures']:
                 interp_text.append(
-                    'Toate crizele adnotate au fost detectate corect (100% sensibilitate per-event).'
+                    'Toate crizele adnotate au fost detectate corect.'
                 )
             elif em['tp'] > 0:
                 interp_text.append(
@@ -332,10 +331,8 @@ def generate_pdf_report(result, filename, ground_truth=None,
 
     notes = (
         '<b>Arhitectura:</b> Sistem hibrid cu doua modele complementare. '
-        'LightGBM opereaza pe 194 features tabulare (band powers, wavelet, Hjorth, '
-        'statistici, entropii), iar EEGNet (F1=32, D=6, F2=64) proceseaza direct semnalul brut. '
-        'Predictiile sunt combinate ca medie ponderata 50/50.<br/><br/>'
-        '<b>Dataset antrenament:</b> CHB-MIT Scalp EEG Database, 19 pacienti (chb06-chb24).<br/><br/>'
+        'LightGBM opereaza pe 194 features tabulare, iar EEGNet proceseaza direct semnalul brut. '
+        '<b>Dataset antrenament:</b> CHB-MIT Scalp EEG Database <br/><br/>'
         '<b>Limitari:</b> Modelul a fost evaluat pe pacienti cunoscuti din dataset. '
         'Performanta pe pacienti complet noi poate sa difere. '
         'Sistemul nu substituie evaluarea clinica de specialitate si este destinat uzului '
@@ -346,7 +343,7 @@ def generate_pdf_report(result, filename, ground_truth=None,
 
     story.append(Spacer(1, 1 * cm))
     story.append(Paragraph(
-        'Generat de Seizure Detection System | Lucrare de licenta | '
+        'Generat de EpiDetect | Lucrare de licenta | '
         'Mierla Constantin | UBB Cluj-Napoca, 2026',
         small_style
     ))

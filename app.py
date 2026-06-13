@@ -1,5 +1,5 @@
 """
-Seizure Detection App - Streamlit UI (Iteratia 2)
+EpiDetect - Streamlit UI
 
 Sistem complet pentru detectia crizelor epileptice din fisiere EDF.
 Features:
@@ -11,7 +11,7 @@ Features:
 - Metrici per-window si per-event
 - Export CSV si PDF
 
-Autor: Mierla Constantin, Lucrare de licenta, UBB Cluj-Napoca, 2026
+Autor: Mierlă Constantin, Lucrare de licență, UBB Cluj-Napoca, 2026
 """
 import streamlit as st
 import pandas as pd
@@ -44,7 +44,7 @@ from utils import (find_ground_truth_for_edf, parse_manual_ground_truth,
 # CONFIGURARE PAGINA
 # ============================================================================
 st.set_page_config(
-    page_title='Seizure Detection System',
+    page_title='EpiDetect',
     page_icon='🧠',
     layout='wide',
     initial_sidebar_state='expanded',
@@ -105,7 +105,7 @@ st.markdown("""
 # ============================================================================
 @st.cache_resource(show_spinner=False)
 def get_model():
-    model_path = Path('models/ensemble_v2.pkl')
+    model_path = Path('models/eeg_detection.pkl')
     if not model_path.exists():
         return None
     return load_model(model_path)
@@ -117,9 +117,8 @@ def get_model():
 col_title, col_info = st.columns([3, 1])
 with col_title:
     st.markdown("""
-    # 🧠 Seizure Detection System
-    **Detectia automata a crizelor epileptice din EEG**  
-    *Ensemble: LightGBM + EEGNet, antrenat pe CHB-MIT*
+    # 🧠 EpiDetect
+    **Detectie si monitorizare a crizelor epileptice din EEG**  
     """)
 
 with col_info:
@@ -144,7 +143,7 @@ if model is None:
     st.error("""
     ⚠️ **Model-ul nu a fost gasit**
 
-    Aseaza fisierul `ensemble_v2.pkl` in directorul `models/` si reporneste aplicatia.
+    Aseaza fisierul `eeg_detection.pkl` in directorul `models/` si reporneste aplicatia.
     """)
     st.stop()
 
@@ -206,8 +205,8 @@ with st.sidebar:
 
     st.markdown("""
     <small style='color: #666;'>
-    Seizure Detection System v2.0<br>
-    Mierla Constantin | UBB 2026
+    EpiDetect<br>
+    Mierlă Constantin | UBB 2026
     </small>
     """, unsafe_allow_html=True)
 
@@ -224,14 +223,12 @@ uploaded_file = st.file_uploader(
 
 if uploaded_file is None:
     st.info("""
-    👆 **Incarca un fisier EDF pentru a incepe analiza.**
+    **Incarca un fisier EDF pentru a incepe analiza.**
 
     **Formate acceptate:**
     - Montaj bipolar CHB-MIT (18 canale standard)
     - Montaj monopolar Siena (convertit automat la bipolar)
-
-    **Pentru ground truth automat:** daca numele fisierului este `chb05_16.edf`,
-    plaseaza si `chb05-summary.txt` in acelasi director.
+    
     """)
     st.stop()
 
@@ -316,7 +313,6 @@ info_cols[2].metric(
     f"{fi['original_fs']} Hz" + (' → 256' if fi['was_resampled'] else '')
 )
 info_cols[3].metric('Canale', f"{fi['n_channels_found']}/18")
-info_cols[4].metric('Timp procesare', f'{inference_time:.1f}s')
 
 if fi['was_resampled']:
     st.info(f'ℹ️ Semnal resamplat de la {fi["original_fs"]} Hz la 256 Hz.')
@@ -751,7 +747,7 @@ with tab_export:
 
     st.markdown('---')
     st.markdown("""
-    **Continut rapport PDF:**
+    **Continut raport PDF:**
     - Informatii fisier si configuratie inferenta
     - Metrici per-window si per-event (daca exista ground truth)
     - Tabel cu episoadele detectate
@@ -766,7 +762,7 @@ with tab_export:
 st.markdown('---')
 st.markdown("""
 <div style='text-align: center; color: #666; font-size: 12px; padding: 20px;'>
-    Seizure Detection System v2.0 | Lucrare de licenta | Mierla Constantin<br>
+    EpiDetect | Lucrare de licenta | Mierlă Constantin<br>
     Universitatea Babes-Bolyai, Facultatea de Matematica si Informatica | 2026
 </div>
 """, unsafe_allow_html=True)

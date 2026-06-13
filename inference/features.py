@@ -1,7 +1,3 @@
-"""
-Extractie features identica 100% cu NB1/NB4.
-Genereaza EXACT 831 features pe fereastra, in ordinea corecta.
-"""
 import numpy as np
 from scipy.signal import welch
 from scipy.stats import kurtosis, skew
@@ -69,14 +65,12 @@ def extract_nonlinear_features(signal_1ch):
     psd_norm     = psd / (np.sum(psd) + 1e-10)
     spec_entropy = -np.sum(psd_norm * np.log2(psd_norm + 1e-10))
     n = len(signal_1ch)
-    # Aici am adaugat + 1e-10 in interiorul log-ului pentru a preveni "divide by zero"
     hurst_approx = np.log(np.std(signal_1ch[:n // 2]) / (np.std(signal_1ch) + 1e-10) + 1e-10)
     return {'shannon_entropy':  float(shannon),
             'spectral_entropy': float(spec_entropy),
             'hurst_approx':     float(hurst_approx)}
 
 def extract_all_features(window_data):
-    """Identic cu NB1/NB4 — produce exact 831 features în ordinea originală."""
     all_feats = {}
     for ch_idx in range(window_data.shape[0]):
         sig    = window_data[ch_idx]

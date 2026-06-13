@@ -12,30 +12,23 @@ from .preprocessing import (load_and_preprocess_edf, segment_into_windows,
                              N_CHANNELS, WINDOW_SAMPLES, FS)
 from .features import extract_features_batch
 from .models import EEGNet, get_device
+import warnings
+from sklearn.exceptions import InconsistentVersionWarning
 
+warnings.filterwarnings('ignore', category=InconsistentVersionWarning)
+warnings.filterwarnings('ignore', message='Examining the path of torch.classes')
 
-# ============================================================================
-# CUSTOM UNPICKLER PENTRU CPU
-# ============================================================================
 class CPU_Unpickler(pickle.Unpickler):
-    """
-    Forteaza tensorii PyTorch salvati ca byte-strings in interiorul
-    dictionarului sa se incarce pe CPU, prevenind erorile pe Mac/masini fara CUDA.
-    """
     def find_class(self, module, name):
         if module == 'torch.storage' and name == '_load_from_bytes':
-            return lambda b: torch.load(io.BytesIO(b), map_location='cpu')
+            return lambda b: torch.load(io.BytesIO(b), map_location='cpu', weights_only=False)
         else:
             return super().find_class(module, name)
 
 
 def load_model(model_path):
-    """
-    Incarca modelul ensemble din pickle.
-    Returneaza dict cu toate componentele necesare pentru inferenta.
-    """
+
     with open(model_path, 'rb') as f:
-        # Folosim unpickler-ul custom in loc de torch.load
         ckpt = CPU_Unpickler(f).load()
 
     # LightGBM
@@ -74,17 +67,13 @@ def load_model(model_path):
 
 def predict_lgbm(features, model_dict):
     """Predictie LightGBM pe features tabulare."""
-    # 1. Curatam valorile infinite/NaN
     safe_features = np.nan_to_num(features, nan=0.0, posinf=0.0, neginf=0.0)
 
-    # 2. Scalam pe cele 831 features originale
     X_scaled = model_dict['lgbm_scaler'].transform(safe_features)
 
-    # 3. Selectam cele 194 features pe care a fost antrenat modelul LightGBM
     if model_dict['selected_features'] is not None:
         X_scaled = X_scaled[:, model_dict['selected_features']]
 
-    # 4. Returnam predictia
     return model_dict['lgbm_model'].predict_proba(X_scaled)[:, 1]
 
 def predict_eegnet(windows, model_dict, batch_size=64):
@@ -99,7 +88,6 @@ def predict_eegnet(windows, model_dict, batch_size=64):
     with torch.no_grad():
         for i in range(0, len(windows), batch_size):
             batch = windows[i:i + batch_size]
-            # Normalizare per-fereastra (identic cu antrenare)
             mu = batch.mean(axis=-1, keepdims=True)
             sigma = batch.std(axis=-1, keepdims=True) + 1e-8
             batch_norm = (batch - mu) / sigma
@@ -202,7 +190,6 @@ def run_inference(edf_path, model_dict,
     # 3. Extractie features
     def feat_progress(i, total):
         if progress_callback:
-            # 20% -> 60% pentru features
             progress_callback(f'Extragere features ({i}/{total})...',
                               0.2 + 0.4 * (i / total))
 
@@ -263,7 +250,7 @@ def run_inference(edf_path, model_dict,
             'starts_sec': starts_sec,
         },
         'episodes': episodes,
-        'raw_data': prep['data'],  # pentru vizualizare EEG brut in iter. 3
-        'features': features,       # pentru SHAP in iter. 3
+        'raw_data': prep['data'],
+        'features': features,
         'feature_names': feature_names,
     }

@@ -1,6 +1,5 @@
 """
 Vizualizare semnal EEG brut pentru o fereastra / interval specificat.
-Afiseaza toate cele 18 canale stacked, cu highlight pe fereastra de interes.
 """
 import numpy as np
 import plotly.graph_objects as go
@@ -21,7 +20,7 @@ def create_eeg_viewer(raw_data, center_sec, context_sec=30,
                        highlight_start_sec=None, highlight_end_sec=None,
                        ground_truth_intervals=None, fs=FS):
     """
-    Afiseaza semnalul EEG brut pentru toate cele 18 canale.
+    Afiseaza semnalul EEG brut pentru toate canalele.
 
     Args:
         raw_data: array (n_channels, n_samples) - semnal preprocesat
@@ -38,7 +37,6 @@ def create_eeg_viewer(raw_data, center_sec, context_sec=30,
     n_samples = raw_data.shape[1]
     duration_sec = n_samples / fs
 
-    # Calculam fereastra de afisare
     half_window = context_sec / 2
     display_start_sec = max(0, center_sec - half_window)
     display_end_sec = min(duration_sec, center_sec + half_window)
@@ -46,17 +44,14 @@ def create_eeg_viewer(raw_data, center_sec, context_sec=30,
     start_idx = int(display_start_sec * fs)
     end_idx = int(display_end_sec * fs)
 
-    # Extragem doar portiunea de interes
     signal_slice = raw_data[:, start_idx:end_idx]
     time_axis = np.arange(start_idx, end_idx) / fs
 
-    # Decimate daca sunt prea multe puncte (pentru performanta browser)
     if signal_slice.shape[1] > 10000:
         factor = signal_slice.shape[1] // 10000 + 1
         signal_slice = signal_slice[:, ::factor]
         time_axis = time_axis[::factor]
 
-    # Construim figura cu un subplot per canal (stacked)
     fig = go.Figure()
 
     # Calculam offset-uri pentru stacking
@@ -142,7 +137,6 @@ def create_eeg_viewer(raw_data, center_sec, context_sec=30,
 
 
 def find_episode_for_time(episodes, time_sec):
-    """Gaseste episodul care contine un timp specific, daca exista."""
     for ep in episodes:
         if ep['start_sec'] <= time_sec <= ep['end_sec']:
             return ep

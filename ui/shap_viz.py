@@ -55,7 +55,6 @@ def compute_shap_for_window(features_scaled_selected, lgbm_model):
 
 def prettify_feature_name(name):
     """Transforma un nume tehnic de feature intr-unul lizibil."""
-    # ch05_theta_alpha_ratio -> Ch5 Theta/Alpha ratio
     parts = name.split('_')
     result = []
     for p in parts:
@@ -67,7 +66,7 @@ def prettify_feature_name(name):
             result.append(p)
         else:
             result.append(p.capitalize())
-    # Cross-correlation features: cross_corr_05_12 -> Corr Ch5-Ch12
+
     if name.startswith('cross_corr_'):
         tokens = name.replace('cross_corr_', '').split('_')
         if len(tokens) == 2:

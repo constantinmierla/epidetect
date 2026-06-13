@@ -1,13 +1,8 @@
-"""
-Preprocesare semnale EEG - identica cu cea din NB1.
-Include si re-referentierea monopolar->bipolar pentru dataset-uri ca Siena.
-"""
 import numpy as np
 import mne
 from scipy.signal import butter, filtfilt, iirnotch, resample as scipy_resample
 
 
-# Configuratie - trebuie sa fie identica cu cea din antrenare
 FS = 256
 WINDOW_SEC = 4
 OVERLAP = 0.75

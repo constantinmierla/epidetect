@@ -20,8 +20,8 @@ Lucrare de licență, Universitatea Babeș-Bolyai, 2026.
 seizure_app/
 ├── app.py                     # Streamlit entry point
 ├── inference/                 # Logica ML
-│   ├── preprocessing.py       # Preprocessing EEG (identic cu NB1)
-│   ├── features.py            # Feature extraction (identic cu NB1)
+│   ├── preprocessing.py       # Preprocessing EEG
+│   ├── features.py            # Feature extraction
 │   ├── models.py              # EEGNet class definition
 │   └── pipeline.py            # Inference orchestration
 ├── ui/
@@ -55,57 +55,17 @@ source venv/bin/activate           # pe Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 3. Adaugă modelul antrenat
-
-Copiază fișierul `ensemble_v2.pkl` în directorul `models/`:
-
 ```bash
-cp /cale/catre/ensemble_v2.pkl models/
+cp /cale/catre/eeg_detection.pkl models/
 ```
 
-### 4. Rulează aplicația
+### 3. Rulează aplicația
 
 ```bash
 streamlit run app.py
 ```
 
 Aplicația se deschide automat la `http://localhost:8501`.
-
-## Deploy pe Streamlit Cloud
-
-Streamlit Cloud e cel mai simplu mod de a obține un URL public gratuit.
-
-### Pași
-
-1. **Creează un repository GitHub** cu tot conținutul proiectului.
-
-2. **Modelul > 25MB?** Activează Git LFS:
-   ```bash
-   git lfs install
-   git lfs track "models/*.pkl"
-   git add .gitattributes
-   git add models/ensemble_v2.pkl
-   git commit -m "Add model via LFS"
-   git push
-   ```
-
-3. **Conectează Streamlit Cloud** la https://share.streamlit.io:
-   - Sign in cu GitHub
-   - "New app" → selectează repo-ul
-   - Main file: `app.py`
-   - Python version: 3.11 sau 3.12
-   - Deploy
-
-4. **Setări avansate în dashboard:**
-   - Memory: 1GB (default)
-   - Include secrets dacă e cazul (nu pentru această aplicație)
-
-### Limitări Streamlit Cloud gratuit
-
-- 1GB RAM (atent la încărcarea EDF-urilor mari)
-- CPU only (EEGNet va rula mai lent, dar funcționează)
-- Upload max 300MB (configurat în `config.toml`)
-- Hibernează după 7 zile de inactivitate (prima cerere după hibernare e lentă)
 
 ## Utilizare
 
@@ -157,31 +117,6 @@ Streamlit Cloud e cel mai simplu mod de a obține un URL public gratuit.
 - Smoothing cu medie glisantă (window=15)
 - Filtru consecutivitate minimă (min_consecutive=5)
 - Grupare în episoade + calcul latență vs ground truth
-
-## Troubleshooting
-
-**"Model-ul nu a fost găsit"**  
-→ Verifică că `models/ensemble_v2.pkl` există.
-
-**Upload EDF eșuează / timeout**  
-→ Fișierul e prea mare. Redu durata EDF-ului sau crește `maxUploadSize` în `.streamlit/config.toml`.
-
-**"Prea puține canale comune"**  
-→ Fișierul nu are cel puțin 10 din cele 18 canale bipolare standard. Verifică formatul.
-
-**Inferență lentă pe Streamlit Cloud**  
-→ Normal, CPU only. Un EDF de 30 min durează 1-3 minute.
-
-**Modelul încarcă dar dă erori la predicție**  
-→ Arhitectura EEGNet din `inference/models.py` trebuie să fie **identică** cu cea din antrenare. Dacă ai modificat-o, re-salvează modelul.
-
-## Credits
-
-- **CHB-MIT Scalp EEG Database** — PhysioNet
-- **EEGNet** — Lawhern et al. (2018)
-- **LightGBM** — Microsoft Research (Ke et al., 2017)
-- **Streamlit** — https://streamlit.io
-- **Plotly** — https://plotly.com
 
 ## Licență
 
