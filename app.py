@@ -20,10 +20,8 @@ import tempfile
 import time
 import __main__
 
-# Note: Change 'models' if your file is named something else, like 'networks.py'
 from inference.models import EEGNet
 
-# Trick pickle into finding the class
 __main__.EEGNet = EEGNet
 from pathlib import Path
 
@@ -143,7 +141,6 @@ if model is None:
     st.error("""
     ⚠️ **Model-ul nu a fost gasit**
 
-    Aseaza fisierul `eeg_detection.pkl` in directorul `models/` si reporneste aplicatia.
     """)
     st.stop()
 
